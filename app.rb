@@ -181,27 +181,6 @@ class App < Sinatra::Base
     erb :newadmin, layout: :layout
   end
 
-
-  post '/editpassword' do
-    if params['currentpassword'] == @current_user.password
-      @errorpasswordconf = 'Passwords are not equal' if params[:password] != params[:confPassword]
-      if params[:password].length < 5 || params[:password].length > 20
-        @errorpasswordlength = 'Password must be between 5 and 20 characters long'
-      end
-      if @errorpasswordconf || @errorpasswordlength
-        erb :editprofile
-      else
-        @current_user.update(password: params[:password])
-        redirect '/documents'
-      end
-    else
-      @errorpassword = 'La contraseña es incorrecta'
-      erb :editprofile
-    end
-  end
-
-
-
   def array_to_tag(users)
     if users && users != ''
       tagged_users = ''
@@ -289,18 +268,7 @@ class App < Sinatra::Base
     end
   end
 
-  post '/unsubscribe' do
-    category = Category.first(name: params['category'])
-    if @current_user && category && @current_user.remove_category(category)
-      @success = "You have been unsubscribed from #{params[:category]}"
-      @categories = @current_user.categories_dataset if @current_user.categories_dataset.to_a.length.positive?
-      erb :deletecats, layout: :layout
-    else
-      @error = "An error has ocurred when trying unsubscribe you from #{params[:category]}"
-      @categories = @current_user.categories_dataset
-      erb :deletecats, layout: :layout
-    end
-  end
+
 
   post '/documents' do
     @page = set_page
@@ -349,13 +317,7 @@ class App < Sinatra::Base
     end
   end
 
-  post '/forgotpass' do
-    if User.find(email: params[:email])
-      redirect "/insertcode?email=#{params[:email]}"
-    elsif @error == 'The email account does not exists'
-      erb :forgotpass
-    end
-  end
+
 
   get '/insertcode' do
     erb :insertcode

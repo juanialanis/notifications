@@ -27,6 +27,11 @@ class AccountController < Sinatra::Base
 	    return erb :login
 	end
 
+	get '/logout' do
+	    session.clear
+	    redirect '/login'
+	end
+
 	get '/signup' do
 	    erb :signup, layout: :layout
 	end
@@ -70,7 +75,7 @@ class AccountController < Sinatra::Base
 	    email = params[:email]
 	    fullName = params[:fullname]
 	    begin
-	    	AccountService.editprofile(password,username,email,fullName)
+	    	AccountService.edit_profile(password,username,email,fullName)
 	    	redirect '/documents'
 	    rescue ArgumentError => e
 	    end 
@@ -80,8 +85,28 @@ class AccountController < Sinatra::Base
 	    erb :forgotpass, layout: :layout
 	end
 
+	post '/forgotpass' do
+		email = params[:email]
+		begin
+			AccountService.forgot_pass(email) 
+			redirect "/insertcode?email=#{email}"
+			rescue ArgumentError => e
+			@error = e.message	
+		end
+	end
+	
 	get '/editpassword' do
 	    erb :editpassword
+	end
+
+	post '/editpassword' do
+		current_password = params[:current_password]
+		password = params[:password]
+		conf_password = params[:conf_password]
+		begin
+			AccountService.edit_password(current_password, password, conf_password)
+			redirect '/documents'
+		end
 	end
 
 	get '/mycategories' do
@@ -100,8 +125,6 @@ class AccountController < Sinatra::Base
 	    erb :notifications
 	  end
 
-	  
-
 	  get '/mydocuments' do
 	    mydocs = @current_user.documents_dataset.where(delete: false)
 	    mydocstaged = mydocs.select(:document_id).where(motive: 'taged')
@@ -117,10 +140,18 @@ class AccountController < Sinatra::Base
 	    erb :deletecats, layout: :layout
 	  end
 
-	  get '/logout' do
-	    session.clear
-	    redirect '/login'
-	  end
+	  post '/unsubscribe' do
+		category = Category.first(name: params['category'])
+		begin
+			AccountService.unsubscribe(category)
+			@success = "You have been unsubscribed from #{category}"
+			erb :deletecats, layout: :layout
+			rescue ArgumentError => e
+			@error = e.message
+			erb :deletecats, layout: :layout
+		end
+	  end	
+
 
 	get '/subscribe' do
 	    if Category.select(:id).except(Subscription.select(:category_id).where(user_id: @current_user.id))
