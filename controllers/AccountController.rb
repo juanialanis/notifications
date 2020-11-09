@@ -2,6 +2,14 @@ require 'sinatra/base'
 require './services/AccountService'
 
 class AccountController < Sinatra::Base
+	configure :development, :production do
+	    enable :logging
+	    enable :session
+	    set :session_secret, 'otro secret pero dificil y abstracto'
+	    set :sessions, true
+	    set :server, 'thin'
+	    set :sockets, []
+	end
 
 	get '/login' do
 	    erb :login, layout: :layout
@@ -12,7 +20,7 @@ class AccountController < Sinatra::Base
 	    password = params[:password]
 
 	    begin 
-	    	AccountService.login_user(username,password)
+	    	AccountService.login_user(username,password, session)
 	    rescue ArgumentError => e
 	    	@error = e.message
 	    end
@@ -50,5 +58,81 @@ class AccountController < Sinatra::Base
 	    	return erb :signup
 	    end
   	end
+
+  	get '/editprofile' do
+		#Tanto este metodo como el post tienen problemas ya que el before no esta funcionando y el @current.user no queda definido
+		erb :editprofile
+	end
+
+	post '/editprofile' do
+	    username = params[:username]
+	    password = params[:password]
+	    email = params[:email]
+	    fullName = params[:fullname]
+	    begin
+	    	AccountService.editprofile(password,username,email,fullName)
+	    	redirect '/documents'
+	    rescue ArgumentError => e
+	    end 
+	end
+
+	get '/forgotpass' do
+	    erb :forgotpass, layout: :layout
+	end
+
+	get '/editpassword' do
+	    erb :editpassword
+	end
+
+	get '/mycategories' do
+	    @categories = @current_user.categories_dataset if @current_user.categories_dataset.to_a.length.positive?
+	    erb :yourcats, layout: :layout
+	end
+
+	get '/notifications' do
+	    getdocs = Notification.select(:document_id).where(user_id: @current_user.id)
+	    documents = Document.select(:id).where(id: getdocs, delete: false)
+
+	    @notifications = Notification.where(user_id: @current_user.id, document_id: documents).order(:datetime).reverse
+	    if params[:id] && Notification.first(document_id: params[:id], user_id: @current_user.id)
+	      Notification.first(document_id: params[:id], user_id: @current_user.id).update(read: true)
+	    end
+	    erb :notifications
+	  end
+
+	  
+
+	  get '/mydocuments' do
+	    mydocs = @current_user.documents_dataset.where(delete: false)
+	    mydocstaged = mydocs.select(:document_id).where(motive: 'taged')
+	    mydocstagedsubs = mydocs.select(:document_id).where(motive: 'taged and subscribed')
+	    if mydocstagedsubs.union(mydocstaged).count.positive?
+	      @documents = Document.where(id: mydocstagedsubs.union(mydocstaged))
+	    end
+	    erb :yourdocs, layout: :layout
+	  end
+
+	  get '/unsubscribe' do
+	    @categories = @current_user.categories_dataset if @current_user.categories_dataset.to_a.length.positive?
+	    erb :deletecats, layout: :layout
+	  end
+
+	  get '/logout' do
+	    session.clear
+	    redirect '/login'
+	  end
+
+	get '/subscribe' do
+	    if Category.select(:id).except(Subscription.select(:category_id).where(user_id: @current_user.id))
+	               .to_a.length.positive?
+	      @categories = Category.select(:id).except(Subscription.select(:category_id).where(user_id: @current_user.id))
+	      @categories = Category.where(id: @categories)
+	    end
+	    erb :suscat, layout: :layout
+	end
+
+	get '/newpass' do
+	    erb :newpass
+	end
 
 end

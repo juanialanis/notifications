@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href=“https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css” rel=“stylesheet” />
+        <script type="text/javascript" src="jquery-latest.js"></script>
+        <script src=“https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js”></script>
+        <script type="text/javascript" src="jquery.js"></script>          
+        <script type="text/javascript" src="select2.js"></script>  
+    </head>
+    <body>
+        <br>
+        <script src="websocket.js" type="text/javascript"></script> 
+        <div class="row justify-content-center align-items-center h-100">
+            <div class="col col-sm-6 col-md-6 col-lg-4 col-xl-3">
+            <form action="/editdocument" method="post" enctype="multipart/form-data">
+                <h2 class="text-center">EDIT DOCUMENT INFORMATION</h2>       
+                <% if @error %>
+                    <div class="alert alert-dismissible alert-danger">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <strong>Oh snap! </strong><%= @error %>
+                    </div>
+                <% end %>
+                <% if @success %>
+                    <div class="alert alert-dismissible alert-success">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <strong>Congrats! </strong><%= @success %>
+                    </div>
+                <% end %>
+               
+                <div class="form-group">
+                    <input type="date" value="<%= @dateedit %>" name="date" class="form-control" placeholder="Date" required="required">
+                </div>
+                
+                <div class="form-group">
+
+                    <select title="Users involved"  name="users[]" class="selectpicker form-control" multiple data-live-search="true">
+                        <% if @useredit && @useredit.length > 0 %>   
+                            <% @useredit.each do |op| %>
+                                <option selected><%= op %></option>
+                            <% end %>
+                        <% end %>
+                        <% @users.reject {|u| u == @useredit}.each do |user| %>
+                        <option data-tokens=<%= user.username %>> <%= user.username %></option>
+                        <% end %>
+                    </select>
+
+
+                    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
+                    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+                    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+                    <script type="text/javascript" src="/bootstrap-select-1.13.14/dist/js/bootstrap-select.js"></script> 
+                    <script>
+                        $(document).ready(function () {
+                          $('.selectpicker').selectpicker();
+                        });
+                    </script>
+                </div>
+                
+                 <div class="form-group">
+                    <input type="text" value="<%= @nameedit %>" name="title" class="form-control" placeholder="Title" required="required">
+                </div>
+
+                <div class="form-group">
+                    <input type="hidden" value="<%= @id %>" name="id" class="form-control" placeholder="Title" required="required">
+                </div>
+                
+                <div class="form-group">
+                <select value="<%= @categoryedit%>" id="categories" name="categories" class="custom-select" >
+                    <option value=<%= @categoryedit %>> <%= @categoryedit %> </option>
+                    <% @categories.each do |category| %>
+                        <option value=<%= category.name %>> <%= category.name %> </option>
+                    <% end %>
+                </select></p>
+                </div>
+                
+
+                <div class="form-group">
+                <br>
+                    <button type="submit" class="btn btn-primary btn-block">Edit</button>
+                </div>  
+            </form>
+            </div>
+        </div>
+    </body>
+</html>

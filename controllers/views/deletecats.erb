@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <br>
+        <% if @categories %>
+            <div class="row justify-content-center align-items-center h-100">
+                <div class="col col-sm-6 col-md-6 col-lg-4 col-xl-3">
+                <form action="/unsubscribe" method="post">
+                    <h2 class="text-center">UNSUBSCRIBE TO A CATEGORY</h2>       
+                    <div class="form-group">
+                        Select one: <select id="category" name="category" class="custom-select">
+                                <% @categories.each do |category| %>
+                                <option value=<%= category.name %>> <%= category.name %> </option>
+                                <% end %>
+                            </select></p>
+                    <% if @error %>
+                        <div class="alert alert-dismissible alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <strong>Oh snap! </strong><%= @error %>
+                        </div>
+                    <% end %>
+                    <% if @success %>
+                        <div class="alert alert-dismissible alert-success">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <strong>Congrats! </strong><%= @success %>
+                        </div>
+                    <% end %>
+                    <% if @error %>
+                        <div class="alert alert-dismissible alert-danger">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <strong>Oh snap! </strong><%= @error %>
+                        </div>
+                    <% end %>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block">Unsubscribe</button>
+                    </div>        
+                </form>
+                </div>
+        <% else %>
+            <div>
+                <% if @success %>
+                    <div class="row justify-content-center align-items-center h-100">
+                        <div class="col col-sm-6 col-md-6 col-lg-4 col-xl-3"> 
+                            <div class="alert alert-dismissible alert-success">
+                                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                <strong>Congrats! </strong><%= @success %>
+                            </div>
+                        </div>
+                    </div>
+                    <legend align="center" >Now, you have not yet subscribed to any categories</legend>
+                <% else %>
+                    <legend align="center" >You have not yet subscribed to any categories</legend>
+                <% end %>
+            <div>
+        <% end %>   
+        </div>
+    </body>
+</html>

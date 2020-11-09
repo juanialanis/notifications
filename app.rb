@@ -153,9 +153,7 @@ class App < Sinatra::Base
 
   
 
-  get '/forgotpass' do
-    erb :forgotpass, layout: :layout
-  end
+  
 
   get '/editdocument' do
     docedit = Document.first(id: params[:id])
@@ -169,22 +167,7 @@ class App < Sinatra::Base
     erb :editinfo
   end
 
-  get '/editprofile' do
-    erb :editprofile
-  end
-
-  get '/editpassword' do
-    erb :editpassword
-  end
-
-  get '/subscribe' do
-    if Category.select(:id).except(Subscription.select(:category_id).where(user_id: @current_user.id))
-               .to_a.length.positive?
-      @categories = Category.select(:id).except(Subscription.select(:category_id).where(user_id: @current_user.id))
-      @categories = Category.where(id: @categories)
-    end
-    erb :suscat, layout: :layout
-  end
+  
 
   get '/upload' do
     @categories = Category.all
@@ -198,65 +181,6 @@ class App < Sinatra::Base
     erb :newadmin, layout: :layout
   end
 
-  get '/notifications' do
-    getdocs = Notification.select(:document_id).where(user_id: @current_user.id)
-    documents = Document.select(:id).where(id: getdocs, delete: false)
-
-    @notifications = Notification.where(user_id: @current_user.id, document_id: documents).order(:datetime).reverse
-    if params[:id] && Notification.first(document_id: params[:id], user_id: @current_user.id)
-      Notification.first(document_id: params[:id], user_id: @current_user.id).update(read: true)
-    end
-    erb :notifications
-  end
-
-  get '/mycategories' do
-    @categories = @current_user.categories_dataset if @current_user.categories_dataset.to_a.length.positive?
-    erb :yourcats, layout: :layout
-  end
-
-  get '/mydocuments' do
-    mydocs = @current_user.documents_dataset.where(delete: false)
-    mydocstaged = mydocs.select(:document_id).where(motive: 'taged')
-    mydocstagedsubs = mydocs.select(:document_id).where(motive: 'taged and subscribed')
-    if mydocstagedsubs.union(mydocstaged).count.positive?
-      @documents = Document.where(id: mydocstagedsubs.union(mydocstaged))
-    end
-    erb :yourdocs, layout: :layout
-  end
-
-  get '/unsubscribe' do
-    @categories = @current_user.categories_dataset if @current_user.categories_dataset.to_a.length.positive?
-    erb :deletecats, layout: :layout
-  end
-
-  get '/logout' do
-    session.clear
-    redirect '/login'
-  end
-
-  
-
-  post '/editprofile' do
-    if params['password'] == @current_user.password
-      if (User.find(username: params[:username]) && User.find(username: params[:username]).id !=
-          @current_user.id) || /\A\w{3,15}\z/ !~ params[:username]
-        @errorusername = 'The username is already in use or its invalid'
-      end
-      if (User.find(email: params[:email]) && User.find(email: params[:email]).id != @current_user.id) ||
-         /\A.*@.*\..*\z/ !~ params[:email]
-        @erroremail = 'The email is invalid'
-      end
-      if @errorusername || @erroremail
-        erb :editprofile
-      else
-        @current_user.update(name: params[:fullname], username: params[:username], email: params[:email])
-        redirect '/documents'
-      end
-    else
-      @errorpassword = 'La contraseña es incorrecta'
-      erb :editprofile
-    end
-  end
 
   post '/editpassword' do
     if params['currentpassword'] == @current_user.password
@@ -446,9 +370,7 @@ class App < Sinatra::Base
     end
   end
 
-  get '/newpass' do
-    erb :newpass
-  end
+  
 
   post '/newpass' do
     user = User.find(email: params[:email])
