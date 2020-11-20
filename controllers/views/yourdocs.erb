@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+	<body>
+		<% if @documents %>
+			<table class="table table-stripped table-hover"> 
+				<thead class="bg-primary text-light">
+				    <tr>
+				        <th scope="col">Title</th>
+				    	<th scope="col">Date</th>
+				        <th scope="col">Users</th>
+				        <th scope="col">Category</th>
+				    </tr>
+				</thead>
+				<% @documents.each do |doc| %>
+				<tbody>
+				<tr style="transform: rotate(0);">
+		    		<th><a  href="/view?id=<%= doc.id %>" target="blank" class="stretched-link text-muted" ><%= doc.name %></a></th>
+		 			<td><%= doc.date %></td>
+		 			<td><%= doc.userstaged %></td>
+		 			<td><%= doc.categorytaged %></td>	
+					<% end %>
+				</a></tr>
+				</tbody>
+			</table>
+		<% else %>
+			<br>
+			<div>
+				<legend align="center">You don't have any documents yet</legend>	
+			</div>
+		<% end %>
+	</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+	<body>
+		<br>
+		<script src="websocket.js" type="text/javascript"></script> 
+		<div class="row justify-content-center align-items-center h-100 display-inline-block">
+			<div class="col col-sm-6 col-md-6 col-lg-4 col-xl-3">
+		<% @notifications.each do |notification| %>	
+			<% doc = Document.first(id: notification.document_id) %>
+			<div class="toast show" style = "display: inline-grid;" role="alert" aria-live="assertive" aria-atomic="true">
+	  			<div class="toast-header">
+			    <% if notification.read == true %>	
+			    	<strong class="mr-auto">Notification</strong>
+			    <% else %>
+			    	<strong class="mr-auto">Notification <span class="badge badge-pill badge-primary">Unread</span></strong>
+			    <% end %>
+			    <% @time = time_ago_in_words(notification.datetime) + ' ago' %> 
+			    <small> <%= @time %> </small>
+			    </button>
+			  </div>
+				<% if notification.motive == 'subscribed' %>
+				  <div class="toast-body">
+				    <a  href="/view?id=<%= notification.document_id %>&read=true" target="blank" class="stretched-link text-muted" >A new document from the <%= doc.categorytaged %> category has been uploaded</a>
+				  </div>
+				<% elsif notification.motive == 'taged' %>
+				  <div class="toast-body">
+				    <a  href="/view?id=<%= notification.document_id %>&read=true"  target="blank" class="stretched-link text-muted" >You have been tagged in a document from the <%= doc.categorytaged %> category</a>
+				  </div>
+				<% else %>
+				   <div class="toast-body">
+				    <a  href="/view?id=<%= notification.document_id %>&read=true" target="blank" class="stretched-link text-muted" >You have been tagged in a document from the <%= doc.categorytaged %> category to which you are subscribed	</a>
+				  </div>
+				<% end %>
+			</div>
+			<% if notification.read == false %>
+				<a href="/notifications?id=<%= notification.document_id %>">
+				<svg class="bi bi-check2" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  				<path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+				</svg>
+				</a>
+			<% else %>	
+				<svg class="bi bi-check2-all" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  				<path fill-rule="evenodd" d="M12.354 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+  				<path d="M6.25 8.043l-.896-.897a.5.5 0 1 0-.708.708l.897.896.707-.707zm1 2.414l.896.897a.5.5 0 0 0 .708 0l7-7a.5.5 0 0 0-.708-.708L8.5 10.293l-.543-.543-.707.707z"/>
+				</svg>
+			<% end %>
+			
+		<% end %>
+			</div>
+		</div>
+	</body>
+</html>
