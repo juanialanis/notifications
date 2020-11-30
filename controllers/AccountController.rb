@@ -153,4 +153,27 @@ class AccountController < BaseController
 	    redirect '/documents'
 	end
 
+	def send_code_email(useremail, user)
+	    @code = rand.to_s[2..6]
+	    @user = user.name
+
+	    Pony.mail({
+	                to: useremail,
+	                via: :smtp,
+	                via_options: {
+	                  address: 'smtp.gmail.com',
+	                  port: '587',
+	                  user_name: 'documentuploadsystem@gmail.com',
+	                  password: 'rstmezqnvkygptjl',
+	                  authentication: :plain,
+	                  domain: 'gmail.com'
+	                },
+	                subject: 'DUNS Verification code',
+	                headers: { 'Content-Type' => 'text/html' },
+	                body: erb(:retrieve, layout: false)
+	              })
+
+	    @code
+	 end
+
 end
