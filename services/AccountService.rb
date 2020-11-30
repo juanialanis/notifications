@@ -73,8 +73,4 @@ class AccountService
 			raise ArgumentError.new("The password is incorrect")
 		end
 	end
-
-	
-
-
 end

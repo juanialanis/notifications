@@ -38,15 +38,6 @@ class BaseController < Sinatra::Base
     end
   end
 
-  def set_notifications_number
-    settings.sockets.each do |s|
-      getdocs = Notification.select(:document_id).where(user_id: s[:user])
-      documents = Document.select(:id).where(id: getdocs, delete: false)
-      unread = Notification.where(user_id: s[:user], document_id: documents, read: false).to_a.length
-      s[:socket].send(unread.to_s)
-    end
-  end
-
   def set_unread_number
     if @current_user
       getdocs = Notification.select(:document_id).where(user_id: @current_user.id)
