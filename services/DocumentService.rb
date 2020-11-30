@@ -44,7 +44,7 @@ class DocumentService
 	   		cantdocs = 0
 	   	end
 
-	    if (cantdocs % @docsperpage).zero?
+	    if cantdocs % @docsperpage != 0
 	        return  cantdocs / @docsperpage
 	    else
 	        return cantdocs / @docsperpage + 1

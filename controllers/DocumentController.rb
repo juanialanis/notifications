@@ -37,13 +37,20 @@ class DocumentController < BaseController
   end
 
   post '/documents' do
-    @page = set_page
-    @docsperpage = 12
-    cargdocs = filter(params[:users], params[:date], params[:category])
-    @documents = cargdocs[((@page.to_i - 1) * @docsperpage)..(@page.to_i * @docsperpage) - 1]
-    cant_pages(cargdocs.length)
-    @view = params[:forma]
+    page = params[:page]
+    user = params[:users]
+    date = params[:date]
+    category = params[:category]
 
+    @page = DocumentService.set_page(page)
+    @docsperpage = 12
+    
+    cargdocs = DocumentService.filter(user,date,category)
+    
+    @documents = cargdocs[((@page.to_i - 1) * @docsperpage)..(@page.to_i * @docsperpage) - 1]
+    DocumentService.cant_pages(@documents)
+    @view = params[:forma]
+    @pagelimit = DocumentService.cant_pages(@documents)
     @filtros = [params[:users], params[:date], params[:category]]
 
     @categories = Category.all
