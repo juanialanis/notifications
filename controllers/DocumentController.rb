@@ -112,7 +112,7 @@ class DocumentController < BaseController
 
   get '/view' do
     document = Document.select(:document).first(id: params['id'])
-    session = @current_user.id
+    session = @current_user
     id = params['id']
     read = Notification.first
     begin 

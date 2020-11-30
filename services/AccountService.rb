@@ -73,4 +73,17 @@ class AccountService
 			raise ArgumentError.new("The password is incorrect")
 		end
 	end
+
+	def self.newadm(username)
+		if User.find(username: username)
+	      if User.find(username: username) && User.find(username: username).role == 'admin'
+	        raise ArgumentError.new("#{username} is already an admin or does not exist")
+	      else
+	        User.where(username: username).update(role: 'admin')
+	      end
+	    else
+	      raise ArgumentError.new("An error has ocurred when trying to promote #{username} to admin")
+	    end
+	end
+	
 end

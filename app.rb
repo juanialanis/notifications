@@ -30,20 +30,6 @@ class App < Sinatra::Base
 
 
 
-  def cant_pages(cantdocs)
-    @docsperpage = 12
-    @pagelimit = if (cantdocs % @docsperpage).zero?
-                   cantdocs / @docsperpage
-                 else
-                   cantdocs / @docsperpage + 1
-                 end
-  end
-
-  get '/aboutus' do
-    erb :aboutus, layout: :layout
-  end
-
-
   def send_code_email(useremail, user)
     @code = rand.to_s[2..6]
     @user = user.name
@@ -67,9 +53,5 @@ class App < Sinatra::Base
     @code
   end
 
-
-  
-
-  
 
 end

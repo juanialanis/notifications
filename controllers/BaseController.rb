@@ -87,5 +87,10 @@ class BaseController < Sinatra::Base
     end
   end
 
+  
+  get '/aboutus' do
+    erb :aboutus, layout: :layout
+  end
+
 
 end

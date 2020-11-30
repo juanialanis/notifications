@@ -115,20 +115,15 @@ class AccountController < BaseController
 	end
 
 	post '/newadmin' do
-	    if User.find(username: params[:username])
-	      if User.find(username: params[:username]) && User.find(username: params[:username]).role == 'admin'
-	        @error = "#{params[:username]} is already an admin or does not exist"
-	        erb :newadmin, layout: :layout
-	      else
-	        User.where(username: params[:username]).update(role: 'admin')
-	        @success = "#{params[:username]} has been promoted to admin"
-	        erb :newadmin, layout: :layout
-	      end
-	    else
-	      @error = "An error has ocurred when trying to promote #{params[:username]} to admin"
-	      erb :newadmin, layout: :layout
-	    end
-	  end
+	    username = params[:username]
+	    begin
+	    	AccountService.newadm(username)	
+	    	@success = "#{params[:username]} has been promoted to admin"
+	    rescue ArgumentError => e
+	    	@error = e.message
+	    end	
+	    erb :newadmin, layout: :layout
+	end
 
 	get '/insertcode' do
 	    erb :insertcode
