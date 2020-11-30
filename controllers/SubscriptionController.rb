@@ -10,11 +10,12 @@ class SubscriptionController < BaseController
 
 	  post '/unsubscribe' do
 		category = Category.first(name: params['category'])
+		user = @current_user
 		begin
-			SubscriptionService.unsubscribe(category)
-			@success = "You have been unsubscribed from #{category}"
+			@categories = SubscriptionService.unsubscribe(category,user)
+			@success = "You have been unsubscribed from #{category.name}"
 			erb :deletecats, layout: :layout
-			rescue ArgumentError => e
+		rescue ArgumentError => e
 			@error = e.message
 			erb :deletecats, layout: :layout
 		end
@@ -30,25 +31,21 @@ class SubscriptionController < BaseController
 	end
 
 	post '/subscribe' do
-    category = Category.first(name: params['categories'])
-    if @current_user && category
-      category.add_user(@current_user)
-      if category.save
-        @success = "You are now subscribed to #{params[:categories]}!"
+    
+    	user = @current_user
+    	category = params['categories']
+    	
+    	begin
+    		SubscriptionService.subscribe(user,category)
+    		@success = "You are now subscribed to #{category}!"
+    	rescue ArgumentError => e
+    		@error = e.message
+    	end
         if Category.select(:id).except(Subscription.select(:category_id).where(user_id: @current_user.id)).to_a.length.positive?
           @categories = Category.select(:id).except(Subscription.select(:category_id).where(user_id: @current_user.id))
           @categories = Category.where(id: @categories)
         end
         erb :suscat, layout: :layout
-      else
-        @error = "You are already subscribed to #{params[:categories]}!"
-        if Category.select(:id).except(Subscription.select(:category_id).where(user_id: @current_user.id)).to_a.length.positive?
-          @categories = Category.select(:id).except(Subscription.select(:category_id).where(user_id: @current_user.id))
-          @categories = Category.where(id: @categories)
-        end
-        erb :suscat, layout: :layout
-      end
-    end
-  end
+  	end
 
 end
